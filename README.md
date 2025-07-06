@@ -7,8 +7,6 @@
   - [C++](#c)
 - [Run code](#run-code)
 - [📄 Pseudo-codes](#-pseudo-codes)
-  - [Hash tables](#hash-tables)
-    - [Open Addressing](#open-addressing)
 
 ## 💻 Built with
 
@@ -25,8 +23,4 @@
 
 ## 📄 Pseudo-codes
 
-### [Hash tables](hash-tables/)
-
-#### [Open Addressing](hash-tables/open-addressing/)
-
-- Includes [insert](hash-tables/open-addressing/insert.md), [delete](hash-tables/open-addressing/delete.md), and [search](hash-tables/open-addressing/search.md) pseudo-codes functions.
+Includes [insert](hash-tables/open-addressing/insert.md), [delete](hash-tables/open-addressing/delete.md), and [search](hash-tables/open-addressing/search.md) pseudo-codes functions.
