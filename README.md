@@ -1,4 +1,4 @@
-<h1 align="center"> 🖥️ Hash tables open addressing project </h1>
+<h1 align="center"> 🖥️ Hash tables algorithms suite </h1>
 
 ## 📌 Table of Contents
 
