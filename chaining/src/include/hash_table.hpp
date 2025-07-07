@@ -4,130 +4,158 @@
 #include <cmath>
 #include <fstream>
 #include <list>
-#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
 
 #include "item.hpp"
-#include "logger.hpp"
 
-enum Hashing { multiply, division };
+enum Hashing { multiply, divide };
 
 template <typename K, typename V>
 class HashTable {
-  std::vector<std::list<std::unique_ptr<Item<K, V>>>> data;
+  std::vector<std::list<Item<K, V>*>> data;
   int size;
-  Hashing hashing;
+  Hashing fn;
+
+  void format_line(std::string& line) {
+    if (line.front() == '<') line = line.substr(1);
+    if (line.back() == '>') line.pop_back();
+    for (auto& c : line) {
+      if (c == ',') c = ' ';
+    }
+  }
+
+  void clear_stream(std::istringstream& stream) {
+    stream.clear();
+    stream.str("");
+  }
 
   int h(K key) {
-    switch (hashing) {
+    switch (fn) {
       case Hashing::multiply: {
-        double product = ((sqrt(5) - 1) / 2) * key;
-        double frac = product - floor(product);
+        double A = (sqrt(5) - 1) / 2;
+        double frac = fmod(key * A, 1.0);
+
         return frac * size;
       }
+
       default:
         return key % size;
     }
   }
 
 public:
-  HashTable(int size, Hashing hashing = division) : size(size) { data.resize(size); }
-
-  HashTable(int size, std::ifstream& input, Hashing hashing = division) : size(size) {
+  HashTable(int size, std::ifstream& input, Hashing fn = Hashing::divide) : size(size), fn(fn) {
     data.resize(size);
     load(input);
   }
 
-  void load(std::ifstream& input) {
-    std::string line;
-    while (std::getline(input, line)) {
-      if (line.front() == '<') line = line.substr(1);
-      if (line.back() == '>') line.pop_back();
-      for (auto& c : line) c = c == ',' ? ' ' : c;
+  void clear() {
+    for (auto& list : data) {
+      for (auto& item : list) {
+        delete item;
+        item = nullptr;
+      }
 
-      std::istringstream ss(line);
-      K key;
-      V value;
-
-      ss >> key >> value;
-      insert(std::unique_ptr<Item<K, V>>(new Item<K, V>(key, value)));
-      ss.clear();
+      list.clear();
     }
   }
 
-  void insert(std::unique_ptr<Item<K, V>> item) {
+  ~HashTable() {
+    clear();
+    data.clear();
+  }
+
+  void load(std::ifstream& input) {
+    clear();
+    input.clear();
+    input.seekg(0, std::ios::beg);
+
+    std::string line;
+    while (std::getline(input, line)) {
+      format_line(line);
+      std::istringstream iss(line);
+      K key;
+      V value;
+
+      iss >> key >> value;
+      insert(new Item<K, V>(key, value));
+
+      clear_stream(iss);
+    }
+  }
+
+  void insert(Item<K, V>* item) {
     int index = h(item->get_key());
-    data[index].push_back(std::move(item));
+    data[index].push_back(item);
   }
 
   Item<K, V>* search(K key) {
-    std::ostringstream oss;
-
     int index = h(key);
+
     if (data[index].empty()) {
-      log("List " + std::to_string(index) + " is empty", LogLevel::ERROR);
+      std::cerr << "[search ERROR] List " << index << " is empty" << std::endl;
       return nullptr;
     }
 
     for (auto& item : data[index]) {
       if (item->get_key() == key) {
-        oss << "Item ";
-        item->print(oss);
-        oss << " found in list " << index;
-        log(oss.str());
+        std::cout << "[search INFO] Item ";
+        item->print();
+        std::cout << " found in list " << index << std::endl;
 
-        return item.get();
+        return item;
       }
     }
 
-    oss.clear();
-    oss << "Item " << key << " not found in list " << index;
-    log(oss.str(), LogLevel::ERROR);
+    std::cerr << "[search ERROR] Item " << key << " not found";
     return nullptr;
   }
 
   void delete_item(K key) {
-    std::ostringstream oss;
-
     int index = h(key);
 
     if (data[index].empty()) {
-      log("List " + std::to_string(index) + " is empty", LogLevel::ERROR);
+      std::cerr << "[delete_item ERROR] List " << index << " is empty" << std::endl;
       return;
     }
 
-    for (auto it = data[index].begin(); it != data[index].end(); it++) {
+    for (auto it = data[index].begin(); it != data[index].end(); ++it) {
       if ((*it)->get_key() == key) {
-        oss << "Item ";
-        (*it)->print(oss);
-        oss << " deleted from list " << index;
-        log(oss.str());
+        std::cout << "[delete_item INFO] Item ";
+        (*it)->print();
+        std::cout << " found in list " << index << std::endl;
 
+        delete *it;
         data[index].erase(it);
+
+        std::cout << "[delete_item INFO] Item " << key << " deleted successfully" << std::endl;
         return;
       }
     }
 
-    oss.clear();
-    oss << "Item " << key << " not found in list " << index;
-    log(oss.str(), LogLevel::ERROR);
-    return;
+    std::cerr << "[delete_item ERROR] Item " << key << " not found";
   }
 
   void print(std::string message = "Hash table", std::ostream& out = std::cout) {
     out << message << std::endl;
 
-    for (int i = 0; i < size; i++) {
+    for (int i = 0; i < data.size(); i++) {
       out << "List " << i;
       if (data[i].empty())
-        out << " => empty list";
+        out << " => empty";
       else {
+        bool first = true;
         for (auto& item : data[i]) {
-          out << " => ";
+          if (first) {
+            out << " => ";
+            first = false;
+          } else {
+            out << " -> ";
+          }
           item->print(out);
-        };
+        }
       }
       out << std::endl;
     }

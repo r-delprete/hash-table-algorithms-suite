@@ -1,29 +1,29 @@
 Hash table
-List 0 => [Key: 0 - Value: ciao] => [Key: 5 - Value: pippo]
-List 1 => empty list
+List 0 => [Key: 0 - Value: ciao] -> [Key: 5 - Value: pippo]
+List 1 => empty
 List 2 => [Key: 15 - Value: pluto]
-List 3 => empty list
+List 3 => empty
 List 4 => [Key: 12 - Value: uva]
-List 5 => empty list
-List 6 => empty list
+List 5 => empty
+List 6 => empty
 List 7 => [Key: 6 - Value: mamma]
-List 8 => empty list
+List 8 => empty
 List 9 => [Key: 8 - Value: mela]
 
 Exam hash table
-List 0 => [Key: 0 - Value: ciao]
-List 1 => [Key: 5 - Value: pippo]
-List 2 => empty list
-List 3 => empty list
-List 4 => [Key: 15 - Value: pluto]
-List 5 => empty list
-List 6 => [Key: 12 - Value: uva]
-List 7 => empty list
-List 8 => empty list
-List 9 => empty list
-List 10 => [Key: 6 - Value: mamma]
-List 11 => empty list
-List 12 => empty list
-List 13 => empty list
-List 14 => [Key: 8 - Value: mela]
+List 0 => [Key: 0 - Value: ciao] -> [Key: 15 - Value: pluto]
+List 1 => empty
+List 2 => empty
+List 3 => empty
+List 4 => empty
+List 5 => [Key: 5 - Value: pippo]
+List 6 => [Key: 6 - Value: mamma]
+List 7 => empty
+List 8 => [Key: 8 - Value: mela]
+List 9 => empty
+List 10 => empty
+List 11 => empty
+List 12 => [Key: 12 - Value: uva]
+List 13 => empty
+List 14 => empty
 

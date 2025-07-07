@@ -7,7 +7,7 @@ int main(int argc, char** argv) {
   ofstream output("output.txt");
   ifstream exam_input("exam_input_example.txt");
 
-  HashTable<int, string> ht(10, input);
+  HashTable<int, string> ht(10, input, Hashing::multiply);
   HashTable<int, string> ht_exam(15, exam_input);
 
   ht.print();
