@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "../../../../cpp-utils/logger.hpp"
 #include "item.hpp"
 
 enum Hashing { linear, double_hash, quadratic };
@@ -83,7 +82,7 @@ public:
       }
     }
 
-    log("Overflow", LogLevel::ERROR);
+    std::cerr << "[insert ERROR] Overflow" << std::endl;
   }
 
   void print(std::string message = "Hash table", std::ostream& out = std::cout) {
@@ -107,27 +106,19 @@ public:
       int index = h(key, i);
 
       if (!data[index]) {
-        oss.clear();
-        oss.str("");
-        oss << "Cell " << index << " is empty";
-        log(oss.str(), LogLevel::ERROR);
-
+        std::cerr << "[search ERROR] Cell " << index << " empty" << std::endl;
         return nullptr;
       }
 
       if (data[index]->get_key() == key) {
-        oss.clear();
-        oss.str("");
-        oss << key << " found in cell " << index;
-        log(oss.str());
+        std::cout << "[search INFO] Item ";
+        data[index]->print();
+        std::cout << " found in cell " << index << std::endl;
         return data[index];
       }
     }
 
-    oss.clear();
-    oss.str("");
-    oss << "Key " << key << " not found";
-    log(oss.str(), LogLevel::ERROR);
+    std::cerr << "[search ERROR] Item " << key << " not found" << std::endl;
     return nullptr;
   }
 
@@ -137,35 +128,24 @@ public:
       int index = h(key, i);
 
       if (!data[index]) {
-        oss.clear();
-        oss.str("");
-        oss << "Cell " << index << " is empty";
-        log(oss.str(), LogLevel::ERROR);
-
+        std::cerr << "[delete_element ERROR] Cell " << index << " empty" << std::endl;
         return;
       }
 
       if (data[index]->get_key() == key) {
-        oss.clear();
-        oss.str("");
-        oss << key << " found in cell " << index;
-        log(oss.str());
+        std::cout << "[delete_element INFO] Item ";
+        data[index]->print();
+        std::cout << " found in cell " << index << std::endl;
+
         delete data[index];
         data[index] = nullptr;
-        oss.clear();
-        oss.str("");
-        oss << key << " deleted successfully";
-        log(oss.str());
 
+        std::cout << "[delete_element INFO] Item " << key << " deleted successfully" << std::endl;
         return;
       }
     }
 
-    oss.clear();
-    oss.str("");
-    oss << "Key " << key << " not found";
-    log(oss.str(), LogLevel::ERROR);
-    return;
+    std::cerr << "[delete_element ERROR] Item " << key << " not found" << std::endl;
   }
 };
 
