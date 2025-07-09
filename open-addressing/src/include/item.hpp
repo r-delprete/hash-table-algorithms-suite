@@ -12,13 +12,13 @@ private:
 public:
   Item(K key, V value) : key(key), value(value) {}
 
-  K get_key() { return key; }
-  V get_value() { return value; }
+  const K get_key() const { return key; }
+  const V get_value() const { return value; }
 
   void set_key(K key) { this->key = this->key; }
   void set_value(V value) { this->value = value; }
 
-  void print(std::ostream& out = std::cout) { out << "[Key: " << key << " - Value: " << value << "]"; }
+  void print(std::ostream& out = std::cout) { out << "[" << key << " - " << value << "]"; }
 };
 
 #endif  // ITEM_HPP

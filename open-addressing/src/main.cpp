@@ -11,7 +11,7 @@ int main(int argc, char** argv) {
   ht.print();
 
   ht.search(6);
-  ht.delete_element(12);
+  ht.delete_item(12);
 
   input.close();
   input2.close();
