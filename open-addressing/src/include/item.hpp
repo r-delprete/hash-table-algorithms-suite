@@ -2,6 +2,7 @@
 #define ITEM_HPP
 
 #include <iostream>
+#include <memory>
 
 template <typename K, typename V>
 class Item {
@@ -20,5 +21,8 @@ public:
 
   void print(std::ostream& out = std::cout) { out << "[" << key << " - " << value << "]"; }
 };
+
+template <typename K, typename V>
+using shared_item_ptr = std::shared_ptr<Item<K, V>>;
 
 #endif  // ITEM_HPP
