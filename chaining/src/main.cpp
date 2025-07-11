@@ -11,15 +11,15 @@ int main(int argc, char** argv) {
   HashTable<int, string> ht_exam(15, exam_input);
 
   ht.print();
-  ht_exam.print("Exam hash table");
-  ht.print("Hash table", output);
-  ht_exam.print("Exam hash table", output);
+  ht_exam.print(cout, "Exam hash table");
+  ht.print(output, "Hash table");
+  ht_exam.print(output, "Exam hash table");
 
   ht.search(6);
   ht.delete_item(12);
 
   cout << endl;
-  ht.print("Base hash table after deleting item 12");
+  ht.print(cout, "Base hash table after deleting item 12");
 
   input.close();
   output.close();

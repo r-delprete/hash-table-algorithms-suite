@@ -9,7 +9,6 @@ List 6 => empty
 List 7 => [6 - mamma]
 List 8 => empty
 List 9 => [8 - mela]
-
 Exam hash table
 List 0 => [0 - ciao] -> [15 - pluto]
 List 1 => empty
@@ -26,4 +25,3 @@ List 11 => empty
 List 12 => [12 - uva]
 List 13 => empty
 List 14 => empty
-
