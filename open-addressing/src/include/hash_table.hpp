@@ -21,11 +21,21 @@ class HashTable {
   int size;
   Hashing fn;
 
+  const int h(const K key, const int index) const {
+    if (fn == Hashing::quadratic) return (key + index * int(pow(index, 2))) % size;
+    if (fn == Hashing::linear) return (key + index) % size;
+
+    const int hash1 = key % size;
+    const int hash2 = 1 + (key % (size - 1));
+    return (hash1 + index * hash2) % size;
+  }
+
   void format_line(std::string& line) {
+    if (line.empty()) return;
     if (line.front() == '<') line = line.substr(1);
     if (line.back() == '>') line.pop_back();
-    for (auto& c : line) {
-      if (c == ',') c = ' ';
+    for (auto& ch : line) {
+      if (ch == ',') ch = ' ';
     }
   }
 
@@ -34,23 +44,15 @@ class HashTable {
     stream.str("");
   }
 
-  int h(K key, int index) {
-    if (fn == Hashing::linear) return (key + index) % size;
-    if (fn == Hashing::quadratic) return (key + index + int(pow(index, 2))) % size;
-
-    int hash1 = key % size;
-    int hash2 = 1 + (key % (size - 1));
-    return (hash1 + index * hash2) % size;
-  }
-
 public:
-  HashTable(int size, std::ifstream& input, Hashing fn = linear) : size(size), fn(fn) {
+  HashTable(const int size, std::ifstream& input) : size(size) {
     data.resize(size);
     load(input);
   }
 
   void reset() {
-    for (auto& item : data) item = nullptr;
+    data.clear();
+    size = 0;
   }
 
   void load(std::ifstream& input) {
@@ -58,13 +60,11 @@ public:
     while (std::getline(input, line)) {
       format_line(line);
       std::istringstream iss(line);
+
       K key;
       V value;
       iss >> key >> value;
-      insert(shared_item_ptr<K, V>(new Item<K, V>(key, value)));
-
-      clear_stream(iss);
-      line.clear();
+      insert(item_factory_shared(key, value));
     }
   }
 
@@ -81,49 +81,54 @@ public:
     std::cerr << "[insert ERROR] Overflow" << std::endl;
   }
 
-  shared_item_ptr<K, V> search(K key) {
+  shared_item_ptr<K, V> search(const K key) {
+    if (data.empty()) {
+      std::cerr << "[search ERROR] Hash table is empty" << std::endl;
+      return nullptr;
+    }
+
     for (int i = 0; i < size; i++) {
       int index = h(key, i);
 
       if (!data[index]) {
-        std::cerr << "[search ERROR] Cell " << index << " empty" << std::endl;
+        std::cerr << "[search ERROR] Item with key " << key << " not found in cell " << index << std::endl;
         return nullptr;
       }
 
-      if (data[index]->get_key() == key) {
-        std::cout << "[search INFO] Item ";
-        data[index]->print();
-        std::cout << " found" << std::endl;
-
-        return data[index];
-      }
+      if (data[index]->get_key() == key) return data[index];
     }
 
-    std::cerr << "[search ERROR] Item " << key << " not found" << std::endl;
+    std::cerr << "[search ERROR] Item with key " << key << " not found" << std::endl;
     return nullptr;
   }
 
-  void delete_item(K key) {
+  void delete_item(const K key) {
+    if (data.empty()) {
+      std::cerr << "[delete_item ERROR] Hash table is empty" << std::endl;
+      return;
+    }
+
     for (int i = 0; i < size; i++) {
       int index = h(key, i);
 
       if (!data[index]) {
-        std::cerr << "[delete_item ERROR] Cell " << index << " empty" << std::endl;
+        std::cerr << "[delete_item ERROR] Item with key " << key << " not found in cell " << index << std::endl;
         return;
       }
 
       if (data[index]->get_key() == key) {
         data[index] = nullptr;
-
-        std::cout << "[delete_item INFO] Item " << key << " deleted successfully" << std::endl;
+        std::cout << "[delete_item INFO] Item with key " << key << " deleted successfully" << std::endl;
         return;
       }
     }
 
-    std::cerr << "[delete_item ERROR] Item " << key << " not found" << std::endl;
+    std::cerr << "[delete_item ERROR] Item with key " << key << " not found" << std::endl;
   }
 
-  void print(std::ostream& out = std::cout, std::string message = "Hash table") {
+  void print(std::ostream& out = std::cout, const std::string message = "Hash table") const {
+    out << message << std::endl;
+
     for (int i = 0; i < size; i++) {
       out << "Cell " << i << " => ";
       if (!data[i])

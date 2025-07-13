@@ -1,0 +1,28 @@
+Hash table
+Cell 0 => [0 - ciao]
+Cell 1 => [12 - uva]
+Cell 2 => empty
+Cell 3 => [15 - pluto]
+Cell 4 => empty
+Cell 5 => [5 - pippo]
+Cell 6 => [6 - mamma]
+Cell 7 => empty
+Cell 8 => [8 - mela]
+Cell 9 => empty
+Cell 10 => empty
+Cell 11 => empty
+
+After delete
+Cell 0 => [0 - ciao]
+Cell 1 => empty
+Cell 2 => empty
+Cell 3 => [15 - pluto]
+Cell 4 => empty
+Cell 5 => [5 - pippo]
+Cell 6 => [6 - mamma]
+Cell 7 => empty
+Cell 8 => [8 - mela]
+Cell 9 => empty
+Cell 10 => empty
+Cell 11 => empty
+
