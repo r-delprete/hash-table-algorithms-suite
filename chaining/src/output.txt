@@ -1,27 +1,29 @@
 Hash table
-List 0 => [0 - ciao] -> [5 - pippo]
-List 1 => empty
-List 2 => [15 - pluto]
-List 3 => empty
-List 4 => [12 - uva]
-List 5 => empty
+List 1 => [0 - ciao] -> [5 - pippo]
+List 2 => empty
+List 3 => [15 - pluto]
+List 4 => empty
+List 5 => [12 - uva]
 List 6 => empty
-List 7 => [6 - mamma]
-List 8 => empty
-List 9 => [8 - mela]
+List 7 => empty
+List 8 => [6 - mamma]
+List 9 => empty
+List 10 => [8 - mela]
+
 Exam hash table
-List 0 => [0 - ciao] -> [15 - pluto]
-List 1 => empty
+List 1 => [0 - ciao] -> [15 - pluto]
 List 2 => empty
 List 3 => empty
 List 4 => empty
-List 5 => [5 - pippo]
-List 6 => [6 - mamma]
-List 7 => empty
-List 8 => [8 - mela]
-List 9 => empty
+List 5 => empty
+List 6 => [5 - pippo]
+List 7 => [6 - mamma]
+List 8 => empty
+List 9 => [8 - mela]
 List 10 => empty
 List 11 => empty
-List 12 => [12 - uva]
-List 13 => empty
+List 12 => empty
+List 13 => [12 - uva]
 List 14 => empty
+List 15 => empty
+

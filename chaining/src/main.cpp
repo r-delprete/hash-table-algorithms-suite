@@ -15,7 +15,13 @@ int main(int argc, char** argv) {
   ht.print(output, "Hash table");
   ht_exam.print(output, "Exam hash table");
 
-  ht.search(6);
+  auto item = ht.search(6);
+  if (item) {
+    cout << "Item ";
+    item->print();
+    cout << " found" << endl;
+  }
+
   ht.delete_item(12);
 
   cout << endl;

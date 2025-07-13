@@ -35,17 +35,17 @@ class HashTable {
     stream.str("");
   }
 
-  int h(K key) {
+  const int h(const K key) const {
     if (fn == Hashing::divide) return key % size;
 
-    double A = (sqrt(5) - 1) / 2;
-    double prod = A * key;
-    double frac = prod - floor(prod);
+    const double A = (sqrt(5) - 1) / 2;
+    const double prod = A * key;
+    const double frac = prod - floor(prod);
     return floor(frac * size);
   }
 
 public:
-  HashTable(int size, std::ifstream& input, Hashing fn = Hashing::divide) : size(size), fn(fn) {
+  HashTable(const int size, std::ifstream& input, Hashing fn = Hashing::divide) : size(size), fn(fn) {
     data.resize(size);
     load(input);
   }
@@ -64,24 +64,25 @@ public:
     std::string line;
     while (std::getline(input, line)) {
       format_line(line);
-      std::istringstream iss(line);
+      std::istringstream stream(line);
+
       K key;
       V value;
-      iss >> key >> value;
-      insert(make_shared_item(key, value));
+      stream >> key >> value;
+      insert(item_factory_shared(key, value));
 
-      clear_stream(iss);
       line.clear();
+      clear_stream(stream);
     }
   }
 
-  void insert(shared_item_ptr<K, V> item) {
-    int index = h(item->get_key());
+  void insert(const shared_item_ptr<K, V>& item) {
+    const int index = h(item->get_key());
     data[index].push_back(item);
   }
 
-  shared_item_ptr<K, V> search(K key) {
-    int index = h(key);
+  shared_item_ptr<K, V> search(const K key) {
+    const int index = h(key);
 
     if (data[index].empty()) {
       std::cerr << "[search ERROR] List " << index << " is empty" << std::endl;
@@ -89,21 +90,15 @@ public:
     }
 
     for (auto& item : data[index]) {
-      if (item->get_key() == key) {
-        std::cout << "[search INFO] Item ";
-        item->print();
-        std::cout << " found in list " << index << std::endl;
-
-        return item;
-      }
+      if (item->get_key() == key) return item;
     }
 
-    std::cerr << "[search ERROR] Item " << key << " not found" << std::endl;
+    std::cerr << "[search ERROR] Item with key " << key << " not found" << std::endl;
     return nullptr;
   }
 
-  void delete_item(K key) {
-    int index = h(key);
+  void delete_item(const K key) {
+    const int index = h(key);
 
     if (data[index].empty()) {
       std::cerr << "[delete_item ERROR] List " << index << " is empty" << std::endl;
@@ -111,22 +106,24 @@ public:
     }
 
     for (auto it = data[index].begin(); it != data[index].end(); ++it) {
-      if ((*it)->get_key() == key) {
-        data[index].erase(it);
-        std::cout << "[delete_item INFO] Item with key " << key << " deleted successfully" << std::endl;
+      std::cout << "[delete_item INFO] Deleting item ";
+      (*it)->print();
+      std::cout << std::endl;
 
-        return;
-      }
+      data[index].erase(it);
+
+      std::cout << "[delete_item INFO] Item deleted successfully" << std::endl;
+      return;
     }
 
-    std::cerr << "[delete_item ERROR] Item " << key << " not found" << std::endl;
+    std::cerr << "[delete_item ERROR] Item with key " << key << " not found" << std::endl;
   }
 
-  void print(std::ostream& out = std::cout, std::string message = "Hash table") {
+  void print(std::ostream& out = std::cout, const std::string message = "Hash table") {
     out << message << std::endl;
 
     for (int i = 0; i < size; i++) {
-      out << "List " << i << " => ";
+      out << "List " << i + 1 << " => ";
       if (data[i].empty())
         out << "empty";
       else {
@@ -134,6 +131,7 @@ public:
         for (auto& item : data[i]) {
           if (first) {
             item->print(out);
+
             first = false;
           } else {
             out << " -> ";
@@ -143,6 +141,8 @@ public:
       }
       out << std::endl;
     }
+
+    out << std::endl;
   }
 };
 

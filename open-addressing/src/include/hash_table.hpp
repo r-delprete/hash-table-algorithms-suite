@@ -45,7 +45,7 @@ class HashTable {
   }
 
 public:
-  HashTable(const int size, std::ifstream& input) : size(size) {
+  HashTable(const int size, std::ifstream& input, Hashing fn = Hashing::linear) : size(size), fn(fn) {
     data.resize(size);
     load(input);
   }
