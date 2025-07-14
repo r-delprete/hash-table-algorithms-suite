@@ -3,59 +3,68 @@
 
 #include <cmath>
 #include <fstream>
-#include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
 
 #include "item.hpp"
 
-template <typename K, typename V>
-using unique_item_ptr = std::unique_ptr<Item<K, V>>;
+void format_line(std::string& line) {
+  if (line.empty()) return;
+  if (line.front() == '<') line = line.substr(1);
+  if (line.back() == '>') line.pop_back();
+  for (auto& ch : line) {
+    if (ch == ',') ch = ' ';
+  }
+}
+
+void clear_stream(std::istringstream& stream) {
+  stream.clear();
+  stream.str("");
+}
 
 enum Hashing { linear, quadratic, double_hash };
 
 template <typename K, typename V>
 class HashTable {
-  std::vector<shared_item_ptr<K, V>> data;
+  std::vector<shared_item<K, V>> data;
   int size;
   Hashing fn;
 
-  const int h(const K key, const int index) const {
-    if (fn == Hashing::quadratic) return (key + index * int(pow(index, 2))) % size;
+  int h(const K key, const int index) const {
     if (fn == Hashing::linear) return (key + index) % size;
+    if (fn == Hashing::quadratic) return (key + index * int(pow(index, 2))) % size;
 
-    const int hash1 = key % size;
-    const int hash2 = 1 + (key % (size - 1));
+    int hash1 = key % size;
+    int hash2 = 1 + (key % (size - 1));
     return (hash1 + index * hash2) % size;
   }
 
-  void format_line(std::string& line) {
-    if (line.empty()) return;
-    if (line.front() == '<') line = line.substr(1);
-    if (line.back() == '>') line.pop_back();
-    for (auto& ch : line) {
-      if (ch == ',') ch = ' ';
-    }
-  }
-
-  void clear_stream(std::istringstream& stream) {
-    stream.clear();
-    stream.str("");
-  }
-
 public:
-  HashTable(const int size, std::ifstream& input, Hashing fn = Hashing::linear) : size(size), fn(fn) {
+  HashTable(int size, std::ifstream& input, const Hashing fn = Hashing::linear) : size(size), fn(fn) {
     data.resize(size);
     load(input);
   }
 
-  void reset() {
-    data.clear();
-    size = 0;
+  int get_size() const { return size; }
+
+  void resize(const int size) {
+    this->size = size;
+    data.resize(size);
   }
 
+  void reset() {
+    data.clear();
+    data.resize(size);
+  }
+
+  bool empty() const { return data.empty(); }
+
   void load(std::ifstream& input) {
+    reset();
+    input.clear();
+    input.seekg(0, std::ios::beg);
+
     std::string line;
     while (std::getline(input, line)) {
       format_line(line);
@@ -64,11 +73,14 @@ public:
       K key;
       V value;
       iss >> key >> value;
-      insert(item_factory_shared(key, value));
+      insert(create_item(key, value));
+
+      clear_stream(iss);
+      line.clear();
     }
   }
 
-  void insert(const shared_item_ptr<K, V>& item) {
+  void insert(const shared_item<K, V>& item) {
     for (int i = 0; i < size; i++) {
       int index = h(item->get_key(), i);
 
@@ -81,8 +93,8 @@ public:
     std::cerr << "[insert ERROR] Overflow" << std::endl;
   }
 
-  shared_item_ptr<K, V> search(const K key) {
-    if (data.empty()) {
+  shared_item<K, V> search(const K key) const {
+    if (empty()) {
       std::cerr << "[search ERROR] Hash table is empty" << std::endl;
       return nullptr;
     }
@@ -103,7 +115,7 @@ public:
   }
 
   void delete_item(const K key) {
-    if (data.empty()) {
+    if (empty()) {
       std::cerr << "[delete_item ERROR] Hash table is empty" << std::endl;
       return;
     }
@@ -117,8 +129,13 @@ public:
       }
 
       if (data[index]->get_key() == key) {
-        data[index] = nullptr;
-        std::cout << "[delete_item INFO] Item with key " << key << " deleted successfully" << std::endl;
+        std::cout << "[delete_item INFO] Deleting item ";
+        data[index]->print();
+        std::cout << std::endl;
+
+        data[index].reset();
+
+        std::cout << "[delete_item INFO] Item deleted successfully" << std::endl;
         return;
       }
     }
@@ -126,17 +143,18 @@ public:
     std::cerr << "[delete_item ERROR] Item with key " << key << " not found" << std::endl;
   }
 
-  void print(std::ostream& out = std::cout, const std::string message = "Hash table") const {
+  void print(std::ostream& out = std::cout, const std::string message = "Hash table") {
     out << message << std::endl;
 
     for (int i = 0; i < size; i++) {
-      out << "Cell " << i << " => ";
+      out << "Cell #" << i + 1 << " => ";
       if (!data[i])
         out << "empty";
       else
         data[i]->print(out);
       out << std::endl;
     }
+
     out << std::endl;
   }
 };
